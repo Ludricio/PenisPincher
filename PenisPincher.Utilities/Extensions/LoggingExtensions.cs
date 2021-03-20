@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using PenisPincher.Utilities.JetBrains.Annotations;
+using JetBrains.Annotations;
 
 namespace PenisPincher.Utilities.Extensions
 {
