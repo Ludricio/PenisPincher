@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PenisPincher.Discord.Services;
 using PenisPincher.Utilities;
+using PenisPincher.Utilities.Extensions;
 
 namespace PenisPincher.Discord
 {
@@ -24,6 +25,25 @@ namespace PenisPincher.Discord
 
         public async Task StartDiscordServicesAsync(IServiceProvider serviceProvider)
         {
+            Logger.Information("Starting Discord services");
+            Logger.Information("Starting service: {0}", nameof(DiscordLoggingService));
+            serviceProvider.GetRequiredService<DiscordLoggingService>();
+
+            Logger.Information("Starting service: {0}", nameof(CommandHandlerService));
+            serviceProvider.GetRequiredService<CommandHandlerService>();
+
+            Logger.Information("Starting service: {0}", nameof(DiscordLoginService));
+            var loginService = serviceProvider.GetRequiredService<DiscordLoginService>();
+
+            loginService.OnClientReady += () =>
+            {
+                WaitHandle.Set();
+                return Task.CompletedTask;
+            };
+
+            await loginService.StartAsync();
+            WaitHandle.WaitOne();
+
 
         }
 
