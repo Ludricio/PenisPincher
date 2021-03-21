@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using PenisPincher.Persistence;
 using PenisPincher.Utilities.Extensions;
 
 namespace PenisPincher.Discord
@@ -28,6 +29,7 @@ namespace PenisPincher.Discord
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
+            
 
             await using var provider = services.BuildServiceProvider();
             Logger = provider.GetRequiredService<ILogger<Bot>>();
@@ -37,13 +39,15 @@ namespace PenisPincher.Discord
             {
                 EnsureDatabaseValidity(provider);
 
-                using var launcher = provider.GetRequiredService<DiscordLauncher>();
+                await using var launcher = provider.GetRequiredService<DiscordLauncher>();
 
-
+                Logger.Information("Entering async wait loop, event reaction enabled.");
+                await Task.Delay(-1);
             }
-            catch
+            catch(Exception e)
             {
-
+                Logger.Critical(e, "Uncaught exception");
+                throw;
             }
         }
 
@@ -59,6 +63,8 @@ namespace PenisPincher.Discord
 #endif
                     builder.AddNLog(Configuration);
                 })
+                .AddPersistence(Configuration.ConnectionString())
+                .AddDiscordServices()
                 .AddSingleton<Random>()
                 .AddSingleton(Configuration)
                 .AddSingleton<DiscordLauncher>();

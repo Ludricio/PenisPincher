@@ -47,7 +47,19 @@ namespace PenisPincher.Discord
 
         }
 
-        public static void ConfigureServices(IServiceCollection services)
+        protected override void Dispose(bool disposing)
+        {
+            if(Disposed) return;
+            if(disposing)
+            {
+                WaitHandle.Dispose();
+            }
+        }
+    }
+
+    public static class DiscordServiceConfigurationExtensions
+    {
+        public static IServiceCollection AddDiscordServices(this IServiceCollection services)
         {
             services
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
@@ -71,15 +83,7 @@ namespace PenisPincher.Discord
                 .AddSingleton<DiscordLoggingService>()
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if(Disposed) return;
-            if(disposing)
-            {
-                WaitHandle.Dispose();
-            }
+            return services;
         }
     }
 }
