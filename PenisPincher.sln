@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Discord", "PenisPincher.Discord\PenisPincher.Discord.csproj", "{479E6AD3-1000-47AA-BF00-75209A3823F2}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Utilities", "PenisPincher.Utilities\PenisPincher.Utilities.csproj", "{48F76753-1C3C-4AE0-BAB8-FA1006806109}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Persistence", "PenisPincher.Persistence\PenisPincher.Persistence.csproj", "{FE61E27D-2D1A-4312-9888-1F72564BFE87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PenisPincher.Discord", "PenisPincher.Discord\PenisPincher.Discord.csproj", "{479E6AD3-1000-47AA-BF00-75209A3823F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PenisPincher.Core", "PenisPincher.Core\PenisPincher.Core.csproj", "{A3A1411C-812B-4AD7-8F94-12ACEF58391B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{48F76753-1C3C-4AE0-BAB8-FA1006806109}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48F76753-1C3C-4AE0-BAB8-FA1006806109}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F76753-1C3C-4AE0-BAB8-FA1006806109}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -23,10 +29,10 @@ Global
 		{FE61E27D-2D1A-4312-9888-1F72564BFE87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE61E27D-2D1A-4312-9888-1F72564BFE87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE61E27D-2D1A-4312-9888-1F72564BFE87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{479E6AD3-1000-47AA-BF00-75209A3823F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
