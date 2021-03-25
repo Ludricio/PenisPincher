@@ -11,6 +11,7 @@ namespace PenisPincher.Core.Models
 
         public ulong MessageId { get; set; }
         public string EmoteName { get; set; }
+        public ulong RoleId { get; set; }
 
         public DiscordServerConfiguration OwningServer { get; set; }
     }
