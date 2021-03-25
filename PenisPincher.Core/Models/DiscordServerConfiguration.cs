@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using PenisPincher.Persistence;
 
 namespace PenisPincher.Core.Models
@@ -23,5 +21,10 @@ namespace PenisPincher.Core.Models
 
         public List<ulong> RuleMessageIds { get; set; }
 
+        public bool LogToServer { get; set; }
+
+        public ulong ServerLogChannelId { get; set; }
+
+        public DiscordServerLogLevel LogLevel { get; set; }
     }
 }
