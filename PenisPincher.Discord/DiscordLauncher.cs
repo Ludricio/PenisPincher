@@ -35,6 +35,8 @@ namespace PenisPincher.Discord
             Logger.Information("Starting service: {0}", nameof(DiscordLoginService));
             var loginService = serviceProvider.GetRequiredService<DiscordLoginService>();
 
+            Logger.Information("Starting Service: {0}", nameof(ReactionRoleService));
+
             loginService.OnClientReady += () =>
             {
                 WaitHandle.Set();
@@ -82,7 +84,8 @@ namespace PenisPincher.Discord
                 }))
                 .AddSingleton<DiscordLoggingService>()
                 .AddSingleton<CommandHandlerService>()
-                .AddSingleton<DiscordLoginService>();
+                .AddSingleton<DiscordLoginService>()
+                .AddSingleton<ReactionRoleService>();
             return services;
         }
     }
