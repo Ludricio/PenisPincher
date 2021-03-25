@@ -8,8 +8,9 @@ namespace PenisPincher.Utilities
 {
     public abstract class AsyncDisposable : Disposable, IAsyncDisposable
     {
-        protected async virtual ValueTask DisposableAsyncCore()
+        protected virtual async ValueTask DisposableAsyncCore()
         {
+            await ValueTask.CompletedTask;
         }
 
         public async ValueTask DisposeAsync()
