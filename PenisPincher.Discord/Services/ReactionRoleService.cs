@@ -32,12 +32,26 @@ namespace PenisPincher.Discord.Services
         //TODO add Role reaction model with message id and emote properties for configuration and identification
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
         {
-            throw new NotImplementedException();
+            if(sr.UserId == DiscordClient.CurrentUser.Id) return;
+
+            if(smc is not SocketTextChannel textChannel) return;
+            if(!MonitoredReactions.TryGetValue(sr.MessageId, out var reactionSet)) return;
+            if(!reactionSet.TryGetValue(sr.Emote.Name, out var reactionRole)) return;
+
+            //TODO get Role from guild and add to GuildUser (get cached from sr or async from guild).
+            //TODO log as information
         }
 
         private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
         {
-            throw new NotImplementedException();
+            if (sr.UserId == DiscordClient.CurrentUser.Id) return;
+
+            if (smc is not SocketTextChannel textChannel) return;
+            if (!MonitoredReactions.TryGetValue(sr.MessageId, out var reactionSet)) return;
+            if (!reactionSet.TryGetValue(sr.Emote.Name, out var reactionRole)) return;
+
+            //TODO get Role from guild and strip from GuildUser (get cached from sr or async from guild).
+            //TODO log as information
         }
 
         public void AddMonitoredReaction(ReactionRole reactionRole)
