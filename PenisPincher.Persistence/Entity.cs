@@ -21,7 +21,7 @@ namespace PenisPincher.Persistence
 
     public abstract class Entity<T> : IEntity<T>
     {
-        private Entity()
+        protected Entity()
         {
             CreatedDate = DateTime.UtcNow;
         }
