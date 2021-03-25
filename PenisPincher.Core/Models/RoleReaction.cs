@@ -2,9 +2,9 @@
 
 namespace PenisPincher.Core.Models
 {
-    public class RoleReactions : Entity<ulong>
+    public class RoleReaction : Entity<ulong>
     {
-        public RoleReactions(DiscordServerConfiguration owningServer)
+        public RoleReaction(DiscordServerConfiguration owningServer)
         {
             OwningServer = owningServer;
         }

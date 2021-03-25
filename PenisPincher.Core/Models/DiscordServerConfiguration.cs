@@ -11,7 +11,7 @@ namespace PenisPincher.Core.Models
         {
             ServerId = serverId;
             MonitoredStreams = new List<MonitoredStream>();
-            RoleReactions = new List<RoleReactions>();
+            RoleReactions = new List<RoleReaction>();
             RuleMessageIds = new List<ulong>();
         }
 
@@ -19,7 +19,7 @@ namespace PenisPincher.Core.Models
 
         public List<MonitoredStream> MonitoredStreams { get; set; }
 
-        public List<RoleReactions> RoleReactions { get; set; }
+        public List<RoleReaction> RoleReactions { get; set; }
 
         public List<ulong> RuleMessageIds { get; set; }
 
