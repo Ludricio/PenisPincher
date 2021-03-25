@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Logging;
 using PenisPincher.Core.Models;
+using PenisPincher.Discord.Extensions;
+using PenisPincher.Utilities.Extensions;
 
 namespace PenisPincher.Discord.Services
 {
@@ -29,7 +27,6 @@ namespace PenisPincher.Discord.Services
             DiscordClient.ReactionRemoved += OnReactionRemoved;
         }
 
-        //TODO add Role reaction model with message id and emote properties for configuration and identification
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
         {
             if(sr.UserId == DiscordClient.CurrentUser.Id) return;
@@ -38,8 +35,25 @@ namespace PenisPincher.Discord.Services
             if(!MonitoredReactions.TryGetValue(sr.MessageId, out var reactionSet)) return;
             if(!reactionSet.TryGetValue(sr.Emote.Name, out var reactionRole)) return;
 
-            //TODO get Role from guild and add to GuildUser (get cached from sr or async from guild).
-            //TODO log as information
+            var role = textChannel.Guild.GetRole(reactionRole.Id);
+            if (role is not null)
+            {
+                var user = sr.User.IsSpecified ? (SocketGuildUser)sr.User.Value : textChannel.GetUser(sr.UserId);
+                await user.AddRoleAsync(role);
+            }
+            else
+            {
+                //if role doesn't exist in discord, log and exit.
+                Logger.Warning(
+                    "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
+                    reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
+                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, //TODO change to embedbuilder and remove text variant from extension
+                    string.Format(
+                        @"**ERROR**
+                    Location: ReactionRoleService
+                    Message: Could not assign role for reaction on emote {0} on message {1} by user id {2}.
+                    Reason: No role with ID {3} exists", reactionRole.EmoteName, reactionRole.MessageId, sr.UserId, reactionRole.RoleId));
+            }
         }
 
         private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
@@ -50,8 +64,25 @@ namespace PenisPincher.Discord.Services
             if (!MonitoredReactions.TryGetValue(sr.MessageId, out var reactionSet)) return;
             if (!reactionSet.TryGetValue(sr.Emote.Name, out var reactionRole)) return;
 
-            //TODO get Role from guild and strip from GuildUser (get cached from sr or async from guild).
-            //TODO log as information
+            var role = textChannel.Guild.GetRole(reactionRole.Id);
+            if(role is not null)
+            {
+                var user = sr.User.IsSpecified ? (SocketGuildUser)sr.User.Value : textChannel.GetUser(sr.UserId);
+                await user.RemoveRoleAsync(role);
+            }
+            else
+            {
+                //if role doesn't exist in discord, log and exit.
+                Logger.Warning(
+                    "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
+                    reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
+                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, //TODO change to embedbuilder and remove text variant from extension
+                    string.Format(
+                        @"**ERROR**
+                    Location: ReactionRoleService
+                    Message: Could not revoke role for reaction on emote {0} on message {1} by user id {2}.
+                    Reason: No role with ID {3} exists", reactionRole.EmoteName, reactionRole.MessageId, sr.UserId, reactionRole.RoleId));
+            }
         }
 
         public void AddMonitoredReaction(ReactionRole reactionRole)
@@ -64,6 +95,8 @@ namespace PenisPincher.Discord.Services
             }
 
             reactionSet.GetOrAdd(reactionRole.EmoteName, reactionRole);
+            Logger.Information("Added role reaction monitoring for emote {0} on message {1} for role {2}",
+                reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
         }
 
         public void RemoveMonitoredReaction(ReactionRole reactionRole)
@@ -71,6 +104,8 @@ namespace PenisPincher.Discord.Services
             if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet)) return;
 
             reactionSet.TryRemove(reactionRole.EmoteName, out _);
+            Logger.Information("Removed role reaction monitoring for emote {0} on message {1} for role {2}",
+                reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
             //TODO remove bot's reaction from message
         }
     }
