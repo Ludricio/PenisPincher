@@ -1,4 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -17,14 +20,27 @@ namespace PenisPincher.Discord.Services
 
         private ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>> MonitoredReactions { get; }
 
-        public ReactionRoleService(DiscordSocketClient discordClient, ILogger<ReactionRoleService> logger)
+        public ReactionRoleService(DiscordSocketClient discordClient, ILogger<ReactionRoleService> logger) : this(
+            discordClient, logger, Enumerable.Empty<ReactionRole>())
+        {
+        }
+
+        public ReactionRoleService(DiscordSocketClient discordClient, ILogger<ReactionRoleService> logger, IEnumerable<ReactionRole> reactionRoles)
         {
             DiscordClient = discordClient;
             Logger = logger;
             MonitoredReactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>>();
-
             DiscordClient.ReactionAdded += OnReactionAdded;
             DiscordClient.ReactionRemoved += OnReactionRemoved;
+
+            var dict = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>>(
+                reactionRoles.GroupBy(x => x.MessageId)
+                .ToDictionary(group => group.Key,
+                    group => new ConcurrentDictionary<string, ReactionRole>(group.ToDictionary(
+                        x => x.EmoteName,
+                        x => x))));
+
+
         }
 
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
