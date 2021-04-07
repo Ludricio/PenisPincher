@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -6,7 +7,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PenisPincher.Core.Models;
 using PenisPincher.Discord.Services;
+using PenisPincher.Persistence;
 using PenisPincher.Utilities;
 using PenisPincher.Utilities.Extensions;
 
@@ -36,6 +39,8 @@ namespace PenisPincher.Discord
             var loginService = serviceProvider.GetRequiredService<DiscordLoginService>();
 
             Logger.Information("Starting Service: {0}", nameof(ReactionRoleService));
+            serviceProvider.GetRequiredService<ReactionRoleService>();
+            
 
             loginService.OnClientReady += () =>
             {
@@ -85,7 +90,14 @@ namespace PenisPincher.Discord
                 .AddSingleton<DiscordLoggingService>()
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>()
-                .AddSingleton<ReactionRoleService>();
+                .AddSingleton(provider =>
+                {
+                    var discordClient = provider.GetRequiredService<DiscordSocketClient>();
+                    var logger = provider.GetRequiredService<ILogger<ReactionRoleService>>();
+                    using var scope = provider.CreateScope();
+                    var repo = scope.ServiceProvider.GetRequiredService<IRepository<ReactionRole>>();
+                    return new ReactionRoleService(discordClient, logger, repo.Get());
+                });
             return services;
         }
     }
