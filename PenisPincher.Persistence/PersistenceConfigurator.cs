@@ -16,7 +16,7 @@ namespace PenisPincher.Persistence
             connString.ThrowIfNull(nameof(connString));
 
             return @this
-                .AddDbContext<DbContext, PenisPincherDbContext>(); //TODO Add options that add sql server
+                .AddDbContext<DbContext, PenisPincherDbContext>(options => options.UseSqlServer(connString));
             //TODO add configurations
         }
     }
