@@ -15,6 +15,8 @@ namespace PenisPincher.Core.Models
 
         public ulong ServerId { get; set; }
 
+        public ulong StreamNotificationChannelId { get; set; }
+
         public List<MonitoredStream> MonitoredStreams { get; set; }
 
         public List<ReactionRole> RoleReactions { get; set; }
