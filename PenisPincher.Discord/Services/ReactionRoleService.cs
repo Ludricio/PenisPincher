@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -70,12 +67,14 @@ namespace PenisPincher.Discord.Services
                 Logger.Warning(
                     "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
                     reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
+
                 ServerLogBuilder
                     .WithTitle("Error")
                     .WithLocation(nameof(ReactionRoleService))
                     .WithMessage("Could not assign role for reaction on emote {0} on message {1} by user id {2}",
                         reactionRole.EmoteName, reactionRole.MessageId, sr.UserId)
                     .WithReason("No role with ID {0} exists", reactionRole.RoleId);
+
                 await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, ServerLogBuilder);
             }
         }
@@ -100,12 +99,14 @@ namespace PenisPincher.Discord.Services
                 Logger.Warning(
                     "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
                     reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
+
                 ServerLogBuilder
                     .WithTitle("Error")
                     .WithLocation(nameof(ReactionRoleService))
                     .WithMessage("Could not revoke role for reaction on emote {0} on message {1} by user id {2}",
                         reactionRole.EmoteName, reactionRole.MessageId, sr.UserId)
                     .WithReason("No role with ID {0} exists", reactionRole.RoleId);
+
                 await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, ServerLogBuilder);
             }
         }
@@ -117,6 +118,7 @@ namespace PenisPincher.Discord.Services
             {
                 reactionSet = new Dictionary<string, ReactionRole>();
                 MonitoredReactions.Add(reactionRole.Id, reactionSet);
+
                 var message = await DiscordClient.GetGuild(reactionRole.OwningServer.ServerId)
                     .GetTextChannel(reactionRole.ChannelId).GetMessageAsync(reactionRole.Id);
                 await message.AddReactionAsync(new Emoji(reactionRole.EmoteName));
@@ -133,6 +135,7 @@ namespace PenisPincher.Discord.Services
             if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet)) return;
 
             reactionSet.Remove(reactionRole.EmoteName, out _);
+
             var message = await DiscordClient.GetGuild(reactionRole.OwningServer.ServerId)
                 .GetTextChannel(reactionRole.ChannelId).GetMessageAsync(reactionRole.Id);
             await message.RemoveReactionAsync(new Emoji(reactionRole.EmoteName), DiscordClient.CurrentUser);
