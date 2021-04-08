@@ -14,6 +14,7 @@ namespace PenisPincher.Core.Models
 
         public DiscordServerConfiguration OwningServer { get; set; }
 
+        public string NotificationTemplate { get; set; }
         public List<ulong> NotificationRoleIds { get; set; }
 
     }
