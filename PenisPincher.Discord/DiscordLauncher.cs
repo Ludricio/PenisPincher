@@ -39,6 +39,9 @@ namespace PenisPincher.Discord
 
             Logger.Information("Starting Service: {0}", nameof(ReactionRoleService));
             serviceProvider.GetRequiredService<ReactionRoleService>();
+
+            Logger.Information("Starting Service: {0}", nameof(StreamLiveMonitorService));
+            serviceProvider.GetRequiredService<StreamLiveMonitorService>();
             
 
             loginService.OnClientReady += () =>
@@ -89,7 +92,8 @@ namespace PenisPincher.Discord
                 .AddSingleton<DiscordLoggingService>()
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>()
-                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>()
+                .AddSingleton<StreamLiveMonitorService>()
+                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>(x => new DiscordServerLogBuilder(Color.Blue)) //Todo color?
                 .AddSingleton(provider =>
                 {
                     var discordClient = provider.GetRequiredService<DiscordSocketClient>();
