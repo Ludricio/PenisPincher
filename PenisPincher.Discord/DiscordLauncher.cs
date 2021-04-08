@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -90,13 +89,15 @@ namespace PenisPincher.Discord
                 .AddSingleton<DiscordLoggingService>()
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>()
+                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>()
                 .AddSingleton(provider =>
                 {
                     var discordClient = provider.GetRequiredService<DiscordSocketClient>();
                     var logger = provider.GetRequiredService<ILogger<ReactionRoleService>>();
+                    var serverLogBuilder = provider.GetRequiredService<IDiscordServerLogBuilder>();
                     using var scope = provider.CreateScope();
                     var repo = scope.ServiceProvider.GetRequiredService<IRepository<ReactionRole>>();
-                    return new ReactionRoleService(discordClient, logger, repo.Get());
+                    return new ReactionRoleService(discordClient, logger, serverLogBuilder, repo.Get());
                 });
             return services;
         }
