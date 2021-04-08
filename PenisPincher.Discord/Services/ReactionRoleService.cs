@@ -110,28 +110,36 @@ namespace PenisPincher.Discord.Services
             }
         }
 
-        public void AddMonitoredReaction(ReactionRole reactionRole)
+        public async Task AddMonitoredReactionAsync(ReactionRole reactionRole)
         {
-            if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet))
+
+            if (!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet))
             {
                 reactionSet = new Dictionary<string, ReactionRole>();
                 MonitoredReactions.Add(reactionRole.Id, reactionSet);
-                //TODO add bot's reaction to message
+                var message = await DiscordClient.GetGuild(reactionRole.OwningServer.ServerId)
+                    .GetTextChannel(reactionRole.ChannelId).GetMessageAsync(reactionRole.Id);
+                await message.AddReactionAsync(new Emoji(reactionRole.EmoteName));
             }
 
             reactionSet[reactionRole.EmoteName] = reactionRole;
             Logger.Information("Added role reaction monitoring for emote {0} on message {1} for role {2}",
                 reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
+
         }
 
-        public void RemoveMonitoredReaction(ReactionRole reactionRole)
+        public async void RemoveMonitoredReactionAsync(ReactionRole reactionRole)
         {
             if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet)) return;
 
             reactionSet.Remove(reactionRole.EmoteName, out _);
+            var message = await DiscordClient.GetGuild(reactionRole.OwningServer.ServerId)
+                .GetTextChannel(reactionRole.ChannelId).GetMessageAsync(reactionRole.Id);
+            await message.RemoveReactionAsync(new Emoji(reactionRole.EmoteName), DiscordClient.CurrentUser);
+
             Logger.Information("Removed role reaction monitoring for emote {0} on message {1} for role {2}",
                 reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
-            //TODO remove bot's reaction from message
+            
         }
     }
 }
