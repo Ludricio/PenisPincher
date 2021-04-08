@@ -15,7 +15,7 @@ namespace PenisPincher.Utilities.Extensions
         {
             if (predicate(@this))
             {
-                throw new ArgumentException();
+                throw new ArgumentException(paramName);
             }
         }
     }
