@@ -1,10 +1,13 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using PenisPincher.Core.Models;
 using PenisPincher.Discord.Extensions;
@@ -12,42 +15,46 @@ using PenisPincher.Utilities.Extensions;
 
 namespace PenisPincher.Discord.Services
 {
+
     public class ReactionRoleService
     {
         private DiscordSocketClient DiscordClient { get; }
 
         private ILogger<ReactionRoleService> Logger { get; }
+        private IDiscordServerLogBuilder ServerLogBuilder { get; }
 
-        private ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>> MonitoredReactions { get; }
+        private Dictionary<ulong, Dictionary<string, ReactionRole>> MonitoredReactions { get; }
 
-        public ReactionRoleService(DiscordSocketClient discordClient, ILogger<ReactionRoleService> logger) : this(
-            discordClient, logger, Enumerable.Empty<ReactionRole>())
+        public ReactionRoleService([NotNull] DiscordSocketClient discordClient,[NotNull] ILogger<ReactionRoleService> logger, [NotNull] IDiscordServerLogBuilder serverLogBuilder) : this(
+            discordClient, logger, serverLogBuilder, Enumerable.Empty<ReactionRole>())
         {
+            
         }
 
-        public ReactionRoleService(DiscordSocketClient discordClient, ILogger<ReactionRoleService> logger, IEnumerable<ReactionRole> reactionRoles)
+        public ReactionRoleService([NotNull] DiscordSocketClient discordClient,
+            [NotNull] ILogger<ReactionRoleService> logger, [NotNull] IDiscordServerLogBuilder serverLogBuilder,
+            [NotNull] IEnumerable<ReactionRole> reactionRoles)
         {
-            DiscordClient = discordClient;
-            Logger = logger;
-            MonitoredReactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>>();
+            DiscordClient = discordClient ?? throw new ArgumentNullException(nameof(discordClient));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            ServerLogBuilder = serverLogBuilder;
+            if(reactionRoles is null) throw new ArgumentNullException(nameof(reactionRoles));
             DiscordClient.ReactionAdded += OnReactionAdded;
             DiscordClient.ReactionRemoved += OnReactionRemoved;
 
-            var dict = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ReactionRole>>(
-                reactionRoles.GroupBy(x => x.MessageId)
-                .ToDictionary(group => group.Key,
-                    group => new ConcurrentDictionary<string, ReactionRole>(group.ToDictionary(
-                        x => x.EmoteName,
-                        x => x))));
-
-
+            MonitoredReactions =
+                reactionRoles
+                    .GroupBy(x => x.MessageId)
+                    .ToDictionary(group => group.Key, group =>
+                        group.ToDictionary(
+                            x => x.EmoteName,
+                            x => x));
         }
 
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel smc, SocketReaction sr)
         {
             if(sr.UserId == DiscordClient.CurrentUser.Id) return;
-
-            if(smc is not SocketTextChannel textChannel) return;
+            if (smc is not SocketTextChannel textChannel) return;
             if(!MonitoredReactions.TryGetValue(sr.MessageId, out var reactionSet)) return;
             if(!reactionSet.TryGetValue(sr.Emote.Name, out var reactionRole)) return;
 
@@ -63,12 +70,13 @@ namespace PenisPincher.Discord.Services
                 Logger.Warning(
                     "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
                     reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
-                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, //TODO change to embedbuilder and remove text variant from extension
-                    string.Format(
-                        @"**ERROR**
-                    Location: ReactionRoleService
-                    Message: Could not assign role for reaction on emote {0} on message {1} by user id {2}.
-                    Reason: No role with ID {3} exists", reactionRole.EmoteName, reactionRole.MessageId, sr.UserId, reactionRole.RoleId));
+                ServerLogBuilder
+                    .WithTitle("Error")
+                    .WithLocation(nameof(ReactionRoleService))
+                    .WithMessage("Could not assign role for reaction on emote {0} on message {1} by user id {2}",
+                        reactionRole.EmoteName, reactionRole.MessageId, sr.UserId)
+                    .WithReason("No role with ID {0} exists", reactionRole.RoleId);
+                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, ServerLogBuilder);
             }
         }
 
@@ -92,12 +100,13 @@ namespace PenisPincher.Discord.Services
                 Logger.Warning(
                     "Could not assign role {0}, role does not exist. GuildID: {1} MessageID: {2} EmoteName: {3}",
                     reactionRole.RoleId, textChannel.Guild.Id, reactionRole.MessageId, reactionRole.EmoteName);
-                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, //TODO change to embedbuilder and remove text variant from extension
-                    string.Format(
-                        @"**ERROR**
-                    Location: ReactionRoleService
-                    Message: Could not revoke role for reaction on emote {0} on message {1} by user id {2}.
-                    Reason: No role with ID {3} exists", reactionRole.EmoteName, reactionRole.MessageId, sr.UserId, reactionRole.RoleId));
+                ServerLogBuilder
+                    .WithTitle("Error")
+                    .WithLocation(nameof(ReactionRoleService))
+                    .WithMessage("Could not revoke role for reaction on emote {0} on message {1} by user id {2}",
+                        reactionRole.EmoteName, reactionRole.MessageId, sr.UserId)
+                    .WithReason("No role with ID {0} exists", reactionRole.RoleId);
+                await textChannel.Guild.LogErrorToServerAsync(reactionRole.OwningServer, ServerLogBuilder);
             }
         }
 
@@ -105,12 +114,12 @@ namespace PenisPincher.Discord.Services
         {
             if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet))
             {
-                reactionSet = new ConcurrentDictionary<string, ReactionRole>();
-                MonitoredReactions.TryAdd(reactionRole.Id, reactionSet);
+                reactionSet = new Dictionary<string, ReactionRole>();
+                MonitoredReactions.Add(reactionRole.Id, reactionSet);
                 //TODO add bot's reaction to message
             }
 
-            reactionSet.GetOrAdd(reactionRole.EmoteName, reactionRole);
+            reactionSet[reactionRole.EmoteName] = reactionRole;
             Logger.Information("Added role reaction monitoring for emote {0} on message {1} for role {2}",
                 reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
         }
@@ -119,7 +128,7 @@ namespace PenisPincher.Discord.Services
         {
             if(!MonitoredReactions.TryGetValue(reactionRole.Id, out var reactionSet)) return;
 
-            reactionSet.TryRemove(reactionRole.EmoteName, out _);
+            reactionSet.Remove(reactionRole.EmoteName, out _);
             Logger.Information("Removed role reaction monitoring for emote {0} on message {1} for role {2}",
                 reactionRole.EmoteName, reactionRole.MessageId, reactionRole.RoleId);
             //TODO remove bot's reaction from message
