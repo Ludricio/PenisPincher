@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using PenisPincher.Persistence;
 
 namespace PenisPincher.Core.Models
 {

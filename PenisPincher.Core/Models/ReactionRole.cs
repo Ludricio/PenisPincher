@@ -1,6 +1,4 @@
-﻿using PenisPincher.Persistence;
-
-namespace PenisPincher.Core.Models
+﻿namespace PenisPincher.Core.Models
 {
     public class ReactionRole : Entity<ulong>
     {

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using PenisPincher.Core;
 
 namespace PenisPincher.Persistence.Repositories
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using PenisPincher.Core;
 
 namespace PenisPincher.Persistence
 {

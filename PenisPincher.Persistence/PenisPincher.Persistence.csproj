@@ -10,11 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PenisPincher.Core\PenisPincher.Core.csproj" />
     <ProjectReference Include="..\PenisPincher.Utilities\PenisPincher.Utilities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Configuration\Mappings\" />
   </ItemGroup>
 
 </Project>
