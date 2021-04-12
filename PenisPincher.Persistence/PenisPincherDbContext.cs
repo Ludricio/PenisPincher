@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using PenisPincher.Persistence.Configuration.Mappings;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace PenisPincher.Persistence
 {
@@ -16,9 +10,8 @@ namespace PenisPincher.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder
-                .ApplyConfiguration(new DiscordServerConfigurationMapping());
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PenisPincherDbContext).Assembly);
         }
     }
 }
