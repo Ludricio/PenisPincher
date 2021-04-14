@@ -4,8 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # Config-ignores
-_config.yaml
-dbconfig.yaml
+_config.json
+dbconfig.json
 
 # User-specific files
 *.rsuser
