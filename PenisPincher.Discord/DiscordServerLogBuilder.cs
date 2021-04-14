@@ -2,25 +2,27 @@
 using System.Collections.Generic;
 using Discord;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Options;
 
 namespace PenisPincher.Discord
 {
-    public class DiscordServerLogBuilder : IDiscordServerLogBuilder, IDiscordServerLogLocationBuilder, IDiscordServerLogMessageBuilder, IDiscordServerLogReasonBuilder, IDiscordServerLogEmbedBuilder
+    public class DiscordServerLogBuilder : IDiscordServerLogBuilder, IDiscordServerLogLocationBuilder,
+        IDiscordServerLogMessageBuilder, IDiscordServerLogReasonBuilder, IDiscordServerLogEmbedBuilder
     {
-        private Color Color { get; }
-        private string LogTitle { get; set; }
-        private Tuple<string, object[]> Location { get; set; }
-        private Tuple<string, object[]> Message { get; set; }
-        private Tuple<string, object[]> Reason { get; set; }
-
-        public DiscordServerLogBuilder(Color color)
+        public DiscordServerLogBuilder(IOptions<AppConfig.DiscordConfig> configuration)
         {
-            Color = color;
+            Color = configuration.Value.EmbedColor;
             LogTitle = null;
             Location = null;
             Reason = null;
             Message = null;
         }
+
+        private Color Color { get; }
+        private string LogTitle { get; set; }
+        private Tuple<string, object[]> Location { get; set; }
+        private Tuple<string, object[]> Message { get; set; }
+        private Tuple<string, object[]> Reason { get; set; }
 
         public Embed Build()
         {
@@ -30,6 +32,33 @@ namespace PenisPincher.Discord
                 .WithFields(ConvertToEmbedFieldBuilders())
                 .WithCurrentTimestamp();
             return builder.Build();
+        }
+
+        public IDiscordServerLogLocationBuilder WithTitle(string errorTitle)
+        {
+            LogTitle = errorTitle;
+            return this;
+        }
+
+        IDiscordServerLogMessageBuilder IDiscordServerLogLocationBuilder.WithLocation(string location,
+            params object[] parameters)
+        {
+            Location = Tuple.Create(location, parameters);
+            return this;
+        }
+
+        IDiscordServerLogReasonBuilder IDiscordServerLogMessageBuilder.WithMessage(string message,
+            params object[] parameters)
+        {
+            Message = Tuple.Create(message, parameters);
+            return this;
+        }
+
+        IDiscordServerLogEmbedBuilder IDiscordServerLogReasonBuilder.WithReason(string reason,
+            params object[] parameters)
+        {
+            Reason = Tuple.Create(reason, parameters);
+            return this;
         }
 
         private IEnumerable<EmbedFieldBuilder> ConvertToEmbedFieldBuilders()
@@ -50,32 +79,8 @@ namespace PenisPincher.Discord
                 {
                     Name = nameof(Message),
                     Value = string.Format(Message.Item1, Message.Item2)
-                },
+                }
             };
-        }
-
-        public IDiscordServerLogLocationBuilder WithTitle(string errorTitle)
-        {
-            LogTitle = errorTitle;
-            return this;
-        }
-
-        IDiscordServerLogMessageBuilder IDiscordServerLogLocationBuilder.WithLocation(string location, params object[] parameters)
-        {
-            Location = Tuple.Create(location, parameters);
-            return this;
-        }
-
-        IDiscordServerLogReasonBuilder IDiscordServerLogMessageBuilder.WithMessage(string message, params object[] parameters)
-        {
-            Message = Tuple.Create(message, parameters);
-            return this;
-        }
-
-        IDiscordServerLogEmbedBuilder IDiscordServerLogReasonBuilder.WithReason(string reason, params object[] parameters)
-        {
-            Reason = Tuple.Create(reason, parameters);
-            return this;
         }
     }
 
@@ -107,7 +112,4 @@ namespace PenisPincher.Discord
     {
         Embed Build();
     }
-
-
-
 }
