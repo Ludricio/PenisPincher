@@ -7,6 +7,10 @@
             OwningServer = owningServer;
         }
 
+        private ReactionRole()
+        {
+        }
+
         public ulong MessageId { get; set; }
         public string EmoteName { get; set; }
         public ulong RoleId { get; set; }

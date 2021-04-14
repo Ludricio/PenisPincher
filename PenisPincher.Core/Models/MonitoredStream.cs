@@ -9,12 +9,15 @@ namespace PenisPincher.Core.Models
             OwningServer = owningServer;
         }
 
+        private MonitoredStream()
+        {
+        }
+
         public string StreamName { get; set; }
 
         public DiscordServerConfiguration OwningServer { get; set; }
 
         public string NotificationTemplate { get; set; }
         public List<ulong> NotificationRoleIds { get; set; }
-
     }
 }
