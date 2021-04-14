@@ -11,7 +11,7 @@ namespace PenisPincher.Persistence
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddYamlFile("dbconfig.yaml")
+                .AddJsonFile("dbconfig.json")
                 .Build();
             var builder = new DbContextOptionsBuilder<PenisPincherDbContext>();
             builder.UseSqlServer(configuration["database:connection_string"]);
