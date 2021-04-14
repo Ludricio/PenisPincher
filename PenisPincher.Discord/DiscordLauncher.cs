@@ -14,16 +14,16 @@ using PenisPincher.Utilities.Extensions;
 
 namespace PenisPincher.Discord
 {
-
     public class DiscordLauncher : AsyncDisposable
     {
-        private ILogger<DiscordLauncher> Logger { get; set; }
-        private ManualResetEvent WaitHandle { get; }
         public DiscordLauncher(ILogger<DiscordLauncher> logger)
         {
             Logger = logger;
             WaitHandle = new ManualResetEvent(false);
         }
+
+        private ILogger<DiscordLauncher> Logger { get; }
+        private ManualResetEvent WaitHandle { get; }
 
         public async Task StartDiscordServicesAsync(IServiceProvider serviceProvider)
         {
@@ -42,7 +42,7 @@ namespace PenisPincher.Discord
 
             Logger.Information("Starting Service: {0}", nameof(StreamLiveMonitorService));
             serviceProvider.GetRequiredService<StreamLiveMonitorService>();
-            
+
 
             loginService.OnClientReady += () =>
             {
@@ -52,17 +52,12 @@ namespace PenisPincher.Discord
 
             await loginService.StartAsync();
             WaitHandle.WaitOne();
-
-
         }
 
         protected override void Dispose(bool disposing)
         {
-            if(Disposed) return;
-            if(disposing)
-            {
-                WaitHandle.Dispose();
-            }
+            if (Disposed) return;
+            if (disposing) WaitHandle.Dispose();
         }
     }
 
@@ -93,7 +88,8 @@ namespace PenisPincher.Discord
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>()
                 .AddSingleton<StreamLiveMonitorService>()
-                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>(x => new DiscordServerLogBuilder(Color.Blue)) //Todo color?
+                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>(x =>
+                    new DiscordServerLogBuilder(Color.Blue)) //Todo color?
                 .AddSingleton(provider =>
                 {
                     var discordClient = provider.GetRequiredService<DiscordSocketClient>();
