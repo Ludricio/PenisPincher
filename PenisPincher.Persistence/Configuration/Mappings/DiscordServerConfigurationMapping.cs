@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PenisPincher.Core.Models;
+﻿using PenisPincher.Core.Models;
 
 namespace PenisPincher.Persistence.Configuration.Mappings
 {
@@ -17,7 +12,8 @@ namespace PenisPincher.Persistence.Configuration.Mappings
                 .Has(e => e.Property(p => p.ServerId).IsRequired())
                 .Has(e => e.Property(p => p.LogLevel))
                 .Has(e => e.Property(p => p.ServerLogChannelId))
-                .Has(e => e.Property(p => p.StreamNotificationChannelId));
+                .Has(e => e.Property(p => p.StreamNotificationChannelId))
+                .Has(e => e.Ignore(p => p.RuleMessageIds)); //TODO ignored for now
         }
     }
 }
