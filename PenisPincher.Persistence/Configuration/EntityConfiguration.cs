@@ -5,7 +5,7 @@ using PenisPincher.Core;
 namespace PenisPincher.Persistence.Configuration
 {
     public abstract class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity>
-        where TEntity : class, IEntity
+        where TEntity : class, IEntity<ulong>
     {
         public void Configure(EntityTypeBuilder<TEntity> builder)
         {
