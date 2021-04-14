@@ -16,7 +16,8 @@ namespace PenisPincher.Discord
         {
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
-                .AddYamlFile("_config.yaml")
+                .AddJsonFile("_config.json")
+                .AddJsonFile("dbconfig.json")
                 .Build();
         }
 
@@ -33,8 +34,8 @@ namespace PenisPincher.Discord
             var services = new ServiceCollection();
             ConfigureServices(services);
 
-
             await using var provider = services.BuildServiceProvider();
+
             Logger = provider.GetRequiredService<ILogger<Bot>>();
             Logger.Information("All services configured, begin initialization");
 
@@ -58,7 +59,7 @@ namespace PenisPincher.Discord
         {
             services
                 .AddDbContext<DbContext, PenisPincherDbContext>(options =>
-                    options.UseSqlServer(Configuration.ConnectionString()))
+                    options.UseSqlServer(Configuration["Database:ConnectionString"]))
                 .AddLogging(builder =>
                 {
                     builder.ClearProviders();
@@ -72,7 +73,13 @@ namespace PenisPincher.Discord
                 .AddDiscordServices()
                 .AddSingleton<Random>()
                 .AddSingleton(Configuration)
-                .AddSingleton<DiscordLauncher>();
+                .AddSingleton<DiscordLauncher>()
+
+                //Configure IOptions
+                .Configure<AppConfig.DatabaseConfig>(options =>
+                    Configuration.GetSection("Database").Bind(options, c => c.BindNonPublicProperties = true))
+                .Configure<AppConfig.DiscordConfig>(options =>
+                    Configuration.GetSection("Discord").Bind(options, c => c.BindNonPublicProperties = true));
         }
     }
 }
