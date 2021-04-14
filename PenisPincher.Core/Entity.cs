@@ -33,7 +33,7 @@ namespace PenisPincher.Core
         object IEntity.Id
         {
             get => Id;
-            set => Id = (T)value;
+            set => Id = (T) value;
         }
 
         [DataType(DataType.DateTime)]
