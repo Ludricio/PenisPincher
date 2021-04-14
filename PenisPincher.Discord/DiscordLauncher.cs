@@ -88,8 +88,7 @@ namespace PenisPincher.Discord
                 .AddSingleton<CommandHandlerService>()
                 .AddSingleton<DiscordLoginService>()
                 .AddSingleton<StreamLiveMonitorService>()
-                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>(x =>
-                    new DiscordServerLogBuilder(Color.Blue)) //Todo color?
+                .AddTransient<IDiscordServerLogBuilder, DiscordServerLogBuilder>()
                 .AddSingleton(provider =>
                 {
                     var discordClient = provider.GetRequiredService<DiscordSocketClient>();
