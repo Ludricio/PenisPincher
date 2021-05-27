@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Utilities", "P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Persistence", "PenisPincher.Persistence\PenisPincher.Persistence.csproj", "{FE61E27D-2D1A-4312-9888-1F72564BFE87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PenisPincher.Core", "PenisPincher.Core\PenisPincher.Core.csproj", "{A3A1411C-812B-4AD7-8F94-12ACEF58391B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PenisPincher.Core", "PenisPincher.Core\PenisPincher.Core.csproj", "{A3A1411C-812B-4AD7-8F94-12ACEF58391B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PenisPincher.WebApp", "PenisPincher.WebApp\PenisPincher.WebApp.csproj", "{5D1A9BD1-0181-4769-861D-1A948F25DE7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3A1411C-812B-4AD7-8F94-12ACEF58391B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D1A9BD1-0181-4769-861D-1A948F25DE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D1A9BD1-0181-4769-861D-1A948F25DE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D1A9BD1-0181-4769-861D-1A948F25DE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D1A9BD1-0181-4769-861D-1A948F25DE7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
